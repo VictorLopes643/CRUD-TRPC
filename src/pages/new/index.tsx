@@ -1,9 +1,9 @@
 'use client'
 import { NextPage } from "next"
 import { Router, useRouter } from "next/router";
-import { useEffect } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { ProductsI } from "~/interfaces/productsI";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { ProductsI, ProductsLanguages } from "~/interfaces/productsI";
 import { api } from "~/utils/api";
 
 
@@ -11,48 +11,95 @@ import { api } from "~/utils/api";
 const New: NextPage = () => {
     const created = api.products.create.useMutation({});
     const router = useRouter();
-    const onSubmit: SubmitHandler<ProductsI> = async (data) => {
+    const onSubmit: SubmitHandler<ProductsLanguages> = async (data) => {
       console.log("data", data);
       try {
         await created.mutateAsync({
-          title: data.title,
-          description: data.description,
           price: Number(data.price),
-          image: data.image
+          image: data.image,
+          language: data.languages
         });
         void router.push('/');
       } catch (error) {
         console.error(error);
       }
     };
-    console.log('created error'  , created.error )
+    console.log('created--'  , created )
 
-    const {  handleSubmit, register } = useForm({
+    const {  handleSubmit, register, control } = useForm({
       defaultValues: {
-        title: '',
-        description: '',
+        languages: [],
         price: 0,
-        image: '',
+        image: ''
       }
     });
+
     
+    const { fields, append, remove } = useFieldArray({
+      control,
+      name: 'languages',
+    });
+  
+
+
     return (
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-3 ">
-                <input className="border border-gray-300 rounded-md p-2 mb-2" {...register("title")} placeholder="Título" type="text" />                              
-                {created.error?.data?.zodError && <p className="text-red-500">{(created.error.data.zodError.fieldErrors.title)}</p>}
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-3">
+        <input
+            className="border border-gray-300 rounded-md p-2 mb-2"
+            {...register("price")}
+            placeholder="Preço"
+            type="number"
+          />
+          <input
+            className="border border-gray-300 rounded-md p-2 mb-2"
+            {...register("image")}
+            placeholder="URL da imagem"
+            type="text"
+          />
+      {fields.map((item, index) => (
+        <div key={item.id}>
+          <input
+            className="border border-gray-300 rounded-md p-2 mb-2"
+            {...register(`languages[${index}].language`)}
+            placeholder="Idioma"
+            type="text"
+          />
+          <input
+            className="border border-gray-300 rounded-md p-2 mb-2"
+            {...register(`languages[${index}].title`)}
+            placeholder="Título"
+            type="text"
+          />
+          <input
+            className="border border-gray-300 rounded-md p-2 mb-2"
+            {...register(`languages[${index}].description`)}
+            placeholder="Descrição"
+            type="text"
+          />
+       
 
-                <input className="border border-gray-300 rounded-md p-2 mb-2" {...register("description")} placeholder="Descrição" type="text" />
-                {created.error?.data?.zodError && <p className="text-red-500">{(created.error.data.zodError.fieldErrors.description)}</p>}
+          <button
+            className="bg-red-500 text-white rounded-md py-2 px-4"
+            type="button"
+            onClick={() => remove(index)}
+          >
+            Remover idioma
+          </button>
+        </div>
+      ))}
 
-                <input className="border border-gray-300 rounded-md p-2 mb-2" {...register("price")} placeholder="Preço" type="number" />
-                {created.error?.data?.zodError  && <p className="text-red-500">{(created.error.data.zodError.fieldErrors.price)}</p>}
-                <input className="border border-gray-300 rounded-md p-2 mb-2" {...register("image")} placeholder="URL da image" type="text" />
-                {created.error?.data?.zodError  && <p className="text-red-500">{(created.error.data.zodError.fieldErrors.image)}</p>}
-                {created.isLoading?
-                <div className="bg-blue-500 text-white rounded-md py-2 px-4">Loading...</div>:
-                <button className="bg-blue-500 text-white rounded-md py-2 px-4" type="submit">Salvar</button>
-              }
-          </form>
+      <button
+        className="bg-blue-500 text-white rounded-md py-2 px-4"
+        type="button"
+        onClick={() => append({ language: '', title: '', description: '' })}
+      >
+        Adicionar idioma
+      </button>
+
+      <button className="bg-blue-500 text-white rounded-md py-2 px-4" type="submit">
+        Salvar
+      </button>
+    </form>
     )
 }
 

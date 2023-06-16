@@ -19,18 +19,19 @@ type PageButtonProps = {
 
 
 const Home: NextPage = () => {
-
+  
   const [spik, setSpik] = useState(0)
+  // const getId = api.products.getAll.useQuery({ });
 
   const created = api.products.create.useMutation({});
 
   const itemsPerPage = 4;
   const maxButtons = 7;
-
+  
   const [currentPage, setCurrentPage] = useState(1);
   const getAll = api.products.getAll.useQuery({ skip: (currentPage - 1) * itemsPerPage, take: itemsPerPage });
   const totalCount = getAll.data? getAll.data.products.info.count: 0;
-
+  
   const totalPages = Math.ceil(totalCount / itemsPerPage);
   const maxButtonsToShow = Math.min(maxButtons, totalPages);
 
@@ -55,7 +56,6 @@ const Home: NextPage = () => {
     price: number
   }
 
-
   const PageButton = ({ page, currentPage, onClick }: PageButtonProps) => {
     const isActive = page === currentPage;
     const buttonClasses = `text-blue-700 font-bold py-2 px-4 rounded hover:bg-blue-600 hover:text-white ${
@@ -77,11 +77,12 @@ const Home: NextPage = () => {
       {getAll.data?.products?.results?.map((product, index) => (
         <ProductsItems
         key={index}
-        title={product.result.title}
+        title={product.translations[0]?.title}
         description={product.result.description}
         price={product.result.price}
         id={product.result.id}
         image={product.result.image}
+        language={product.translations}
         />
         ))}
         </div>

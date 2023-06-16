@@ -24,11 +24,12 @@ const SideBar: React.FC<SideBarProps> = ({ children }) => {
             </nav>
           </aside>
           {/* MAIN */}
-        <main className="flex-1 flex bg-zinc-800 text-white justify-center">
-            <div className="m-6 w-3/5 flex flex-col bg-zinc-200 p-6 rounded-lg space-y-5 text-black" style={{ height: 'calc(100vh - 112px)' }}>
-                {children}
-            </div>
-        </main>
+          <main className="flex-1 flex bg-zinc-800 text-white justify-center">
+  <div className="m-6 w-3/5 flex flex-col bg-zinc-200 p-6 rounded-lg space-y-5 text-black" style={{ height: 'calc(100vh - 112px)', overflowY: 'auto' }}>
+    {children}
+  </div>
+</main>
+
   
         </div>
       </div>

@@ -5,4 +5,8 @@ export interface ProductsI {
     price: number;
     id: number;
     image: string;
+    language: [ProductsLanguages]
+}
+export interface ProductsLanguages {
+    language: [ProductsI]
 }
